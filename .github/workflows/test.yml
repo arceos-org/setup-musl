@@ -29,5 +29,6 @@ jobs:
       if: ${{ matrix.arch == 'x86_64' }}
       run: |
         chmod +x ./hello
+        ls -lha
         ./hello
       shell: bash
