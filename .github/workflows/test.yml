@@ -30,7 +30,6 @@ jobs:
       run: |
         chmod +x ./hello
         ls -lha
-        file ./hello
-        readelf -a ./hello
+        ls /lib/ld-musl-x86_64.so.1
         ./hello
       shell: bash
