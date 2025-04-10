@@ -1,0 +1,32 @@
+name: Test
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x86_64, aarch64, riscv64]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Setup musl toolchain
+      id: setup-musl
+      uses: ./
+      with:
+        arch: ${{ matrix.arch }}
+    - name: Check musl toolchain
+      run: |
+        ${{ matrix.arch }}-linux-musl-gcc --version
+      shell: bash
+    - name: Check compilation
+      run: |
+        echo -e '#include <stdio.h>\nint main() { printf("Hello, World!\\n"); return 0; }' > hello.c
+        ${{ matrix.arch }}-linux-musl-gcc -o hello hello.c
+      shell: bash
+    - name: Check compilation output
+      if: ${{ matrix.arch == 'x86_64' }}
+      run: |
+        ./hello
+      shell: bash
