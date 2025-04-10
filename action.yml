@@ -1,9 +1,10 @@
 name: Setup the musl toolchain
 description: |
   Download and install the musl toolchain for the specified architecture.
-  The toolchain is cached to speed up subsequent runs.
-  The toolchain is added to the PATH environment variable.
 author: "equation314"
+branding:
+  color: "blue"
+  icon: "download"
 
 inputs:
   arch:
