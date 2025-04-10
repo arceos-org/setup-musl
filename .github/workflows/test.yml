@@ -28,8 +28,6 @@ jobs:
     - name: Check compilation output
       if: ${{ matrix.arch == 'x86_64' }}
       run: |
-        chmod +x ./hello
-        ls -lha
-        ls /lib/ld-musl-x86_64.so.1
+        sudo apt-get install musl
         ./hello
       shell: bash
