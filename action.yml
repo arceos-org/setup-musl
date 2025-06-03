@@ -26,7 +26,7 @@ runs:
     shell: bash
     run: |
       MUSL_PATH=${{ inputs.arch }}-linux-musl-cross
-      wget https://musl.cc/${MUSL_PATH}.tgz
+      wget https://github.com/arceos-org/setup-musl/releases/download/prebuilt/${MUSL_PATH}.tgz
       tar -xf ${MUSL_PATH}.tgz
   - uses: actions/cache/save@v4
     if: steps.cache-musl.outputs.cache-hit != 'true'
