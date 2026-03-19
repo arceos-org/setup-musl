@@ -12,33 +12,47 @@ inputs:
     required: true
     type: string
 
+outputs:
+  cross_compile:
+    description: 'Cross compiler prefix for the selected musl toolchain'
+    value: ${{ steps.musl-prefix.outputs.cross_compile }}
+
 runs:
   using: "composite"
   steps:
+  - name: Resolve musl toolchain prefix
+    id: musl-prefix
+    shell: bash
+    run: |
+      if [ "${{ inputs.arch }}" = "arm" ]; then
+        echo "cross_compile=arm-linux-musleabi" >> "$GITHUB_OUTPUT"
+      else
+        echo "cross_compile=${{ inputs.arch }}-linux-musl" >> "$GITHUB_OUTPUT"
+      fi
   - name: Cache musl
     id: cache-musl
     uses: actions/cache/restore@v4
     with:
-      path: ${{ inputs.arch }}-linux-musl-cross
-      key: ${{ inputs.arch }}-linux-musl-cross
+      path: ${{ steps.musl-prefix.outputs.cross_compile }}-cross
+      key: ${{ inputs.arch }}
   - name: Download musl toolchain
     if: steps.cache-musl.outputs.cache-hit != 'true'
     shell: bash
     run: |
-      MUSL_PATH=${{ inputs.arch }}-linux-musl-cross
+      MUSL_PATH=${{ steps.musl-prefix.outputs.cross_compile }}-cross
       wget https://github.com/arceos-org/setup-musl/releases/download/prebuilt/${MUSL_PATH}.tgz
       tar -xf ${MUSL_PATH}.tgz
   - uses: actions/cache/save@v4
     if: steps.cache-musl.outputs.cache-hit != 'true'
     with:
-      path: ${{ inputs.arch }}-linux-musl-cross
-      key: ${{ inputs.arch }}-linux-musl-cross
+      path: ${{ steps.musl-prefix.outputs.cross_compile }}-cross
+      key: ${{ inputs.arch }}
 
   - name: Add to PATH environment variable
     shell: bash
     run: |
-      echo "$PWD/${{ inputs.arch }}-linux-musl-cross/bin" >> $GITHUB_PATH
+      echo "$PWD/${{ steps.musl-prefix.outputs.cross_compile }}-cross/bin" >> $GITHUB_PATH
   - name: Verify installation
     shell: bash
     run: |
-      ${{ inputs.arch }}-linux-musl-gcc --version
+      ${{ steps.musl-prefix.outputs.cross_compile }}-gcc --version
