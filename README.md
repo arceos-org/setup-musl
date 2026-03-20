@@ -6,12 +6,14 @@ GitHub Action to set up a musl toolchain for cross-compiling on Linux.
 
 ```yaml
 steps:
-- uses: actions/setup-musl@v1
+- id: setup-musl
+  uses: actions/setup-musl@v1
   with:
-    target: 'x86_64' # Required. The target architecture to set up.
-                     # Currently supported architecture: x86_64, aarch64, riscv64, loongarch64.
+    arch: 'x86_64' # Required. The target architecture to set up.
+                   # Currently supported architecture: x86_64, aarch64, riscv64,
+                   # loongarch64, arm.
 - run: |
-    x86_64-linux-musl-gcc --version
+    ${{ steps.setup-musl.outputs.cross_compile }}-gcc --version
 ```
 
 Authored by @equation314, ported by @aarkegz.

@@ -7,7 +7,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        arch: [x86_64, aarch64, riscv64, loongarch64]
+        arch: [x86_64, aarch64, riscv64, loongarch64, arm]
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -18,12 +18,12 @@ jobs:
         arch: ${{ matrix.arch }}
     - name: Check musl toolchain
       run: |
-        ${{ matrix.arch }}-linux-musl-gcc --version
+        ${{ steps.setup-musl.outputs.cross_compile }}-gcc --version
       shell: bash
     - name: Check compilation
       run: |
         echo -e '#include <stdio.h>\nint main() { printf("Hello, World!\\n"); return 0; }' > hello.c
-        ${{ matrix.arch }}-linux-musl-gcc -o hello hello.c
+        ${{ steps.setup-musl.outputs.cross_compile }}-gcc -o hello hello.c
       shell: bash
     - name: Check compilation output
       if: ${{ matrix.arch == 'x86_64' }}
